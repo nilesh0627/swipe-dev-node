@@ -1,42 +1,32 @@
-const express = require('express');
+import express from 'express'
+import dotenv from 'dotenv'
+import { connectDB } from './config/database.js'
+import { User } from './models/user.js'
+import './config/database.js'
+
+dotenv.config()
 const app = express();
-const port = process.env.PORT || 3000;
 
-// match GET method
-app.get('/user', (req, res) => {
-    res.send({
+app.post('/signup', async (req, res) => {
+    const user = new User({
         firstName: 'Aarti',
-        middleName: 'Nilesh',
         lastName: 'Mishra',
-        age: 26,
-        gender: 'female',
-        profession: 'Java Full-stack developer',
-        address: {
-            city: 'Bengaluru',
-            pincode: 560076,
-            area: 'kodichikanahalli'
-        }
-
+        gender: 'Female',
+        age: 27,
+        password: 'Aarti@345',
+        email: 'aarti@gmail.com'
     })
+    await user.save()
+    res.send(`user signedup successfully`)
 })
 
 
-//match POST method
-app.post('/user', (req, res) => {
-    res.send('User saved Successfully !!')
+connectDB().then(() => {
+    console.log('DB Connection Successful')
+    app.listen(port, () => {
+        console.log(`Server running on port: ${port}`);
+    })
+}).catch((err) => {
+    console.log('something went wrong', err)
 })
 
-
-//match DELETE method
-app.delete('/user', (req, res) => {
-    res.send('User deleted Successfully !!')
-})
-
-app.listen(port, () => {
-    console.log(`Server running on port: ${port}`);
-})
-
-//will match all http methods to /use
-app.use('/user', (req, res) => {
-    res.send('use method overides all the http methods')
-})
