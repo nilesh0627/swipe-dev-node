@@ -7,6 +7,8 @@ import './config/database.js'
 dotenv.config()
 const app = express();
 
+const port = process.env.PORT || 3000;
+
 app.post('/signup', async (req, res) => {
     const user = new User({
         firstName: 'Aarti',
