@@ -2,13 +2,11 @@ import validator from "validator";
 import {
   ABOUT,
   AGE,
-  ALL_FIELDS,
   EMAIL,
   FIRST_NAME,
   GENDER,
   GENDER_LIST,
   LAST_NAME,
-  MANDATORY_FIELDS,
   PASSWORD,
   PHOTO_URL,
   SKILLS,
@@ -16,59 +14,54 @@ import {
 } from "./constants.js";
 import { isEmpty } from "./helper.js";
 
-export const signupValidation = (signUpData = {}) => {
-  for (let field of MANDATORY_FIELDS) {
-    if (isEmpty(signUpData[field])) return getValidatonMessage(field, "EMPTY");
-  }
-  for (let field of ALL_FIELDS) {
-    switch (field) {
-      case FIRST_NAME:
-      case LAST_NAME:
-        if (signUpData[field]?.length < 4 || signUpData[field]?.length > 20)
-          return getValidatonMessage(field, "INVALID");
-        break;
-      case EMAIL:
-        if (!validator.isEmail(signUpData[field]))
-          return getValidatonMessage(field, "INVALID");
-        break;
-      case AGE:
-        if (signUpData[field] < 18)
-          return getValidatonMessage(field, "INVALID");
-        break;
-      case SKILLS:
-        if (!isEmpty(signUpData[field]) && signUpData[field]?.length > 10)
-          return getValidatonMessage(field, "INVALID");
-        break;
-      case PHOTO_URL:
-        if (!isEmpty(signUpData[field]) && !validator.isURL(signUpData[field]))
-          return getValidatonMessage(field, "INVALID");
-        break;
-      case ABOUT:
-        if (
-          !isEmpty(signUpData[field]) &&
-          typeof signUpData[field] === "string" &&
-          signUpData[field].split(" ").length > 5
-        )
-          return getValidatonMessage(field, "INVALID");
-        break;
-      case GENDER:
-        if (
-          !isEmpty(signUpData[field]) &&
-          typeof signUpData[field] === "string" &&
-          !GENDER_LIST.includes(signUpData[field].toUpperCase())
-        )
-          return getValidatonMessage(field, "INVALID");
-        break;
-      case PASSWORD:
-        if (!validator.isStrongPassword(signUpData[field]))
-          return getValidatonMessage(field, "INVALID");
-        break;
-      default:
-        break;
-    }
-  }
-};
-
 const getValidatonMessage = (field, type) => {
   throw new Error(VALIDATION_MESSAGE?.[type]?.[field]);
+};
+
+export const validateUserInfoField = (field, value, required) => {
+  if (required && isEmpty(value)) return getValidatonMessage(field, "EMPTY");
+  switch (field) {
+    case FIRST_NAME:
+    case LAST_NAME:
+      if (value?.length < 4 || value?.length > 20)
+        return getValidatonMessage(field, "INVALID");
+      break;
+    case EMAIL:
+      if (!validator.isEmail(value))
+        return getValidatonMessage(field, "INVALID");
+      break;
+    case AGE:
+      if (value < 18) return getValidatonMessage(field, "INVALID");
+      break;
+    case SKILLS:
+      if (!isEmpty(value) && value?.length > 10)
+        return getValidatonMessage(field, "INVALID");
+      break;
+    case PHOTO_URL:
+      if (!isEmpty(value) && !validator.isURL(value))
+        return getValidatonMessage(field, "INVALID");
+      break;
+    case ABOUT:
+      if (
+        !isEmpty(value) &&
+        typeof value === "string" &&
+        value.split(" ").length > 150
+      )
+        return getValidatonMessage(field, "INVALID");
+      break;
+    case GENDER:
+      if (
+        !isEmpty(value) &&
+        typeof value === "string" &&
+        !GENDER_LIST.includes(value.toUpperCase())
+      )
+        return getValidatonMessage(field, "INVALID");
+      break;
+    case PASSWORD:
+      if (!validator.isStrongPassword(value))
+        return getValidatonMessage(field, "INVALID");
+      break;
+    default:
+      break;
+  }
 };

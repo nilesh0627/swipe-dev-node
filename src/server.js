@@ -4,7 +4,6 @@ import { connectDB } from "./config/database.js";
 import { User } from "./models/user.js";
 import "./config/database.js";
 import { ALLOWED_FIELDS_TO_UPDATE } from "./utils/constants.js";
-import { signupValidation } from "./utils/validation.js";
 
 dotenv.config();
 const app = express();
@@ -20,7 +19,6 @@ app.use(express.json());
 app.post("/signup", async (req, res) => {
   const user = new User(req.body);
   try {
-    signupValidation(req.body);
     await user.save();
     res.send(`user signedup successfully`);
   } catch (err) {
