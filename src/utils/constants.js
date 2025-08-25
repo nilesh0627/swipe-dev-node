@@ -6,6 +6,7 @@ export const AGE = "age";
 export const PASSWORD = "password";
 export const PHOTO_URL = "photoUrl";
 export const EMAIL = "email";
+export const ABOUT = "about";
 
 export const ALLOWED_FIELDS_TO_UPDATE = [
   FIRST_NAME,
@@ -15,6 +16,7 @@ export const ALLOWED_FIELDS_TO_UPDATE = [
   AGE,
   PASSWORD,
   PHOTO_URL,
+  ABOUT,
 ];
 
 export const ALL_FIELDS = [
@@ -26,27 +28,29 @@ export const ALL_FIELDS = [
   AGE,
   PASSWORD,
   PHOTO_URL,
+  ABOUT,
 ];
 
 export const MANDATORY_FIELDS = [FIRST_NAME, LAST_NAME, EMAIL, AGE, PASSWORD];
 
 export const VALIDATION_MESSAGE = {
   EMPTY: {
-    firstName: `First name can't be empty`,
-    lastName: `Last name can't be empty`,
-    email: `Email can't be empty.`,
-    password: `Password can't be empty`,
-    age: `Age can't be empty`,
+    [FIRST_NAME]: `First name can't be empty`,
+    [LAST_NAME]: `Last name can't be empty`,
+    [EMAIL]: `Email can't be empty.`,
+    [PASSWORD]: `Password can't be empty`,
+    [AGE]: `Age can't be empty`,
   },
   INVALID: {
-    firstName: `First name must be in between 4 to 20 characters`,
-    lastName: `Last name must be in between 4 to 20 characters`,
-    email: `Email format is invalid`,
-    age: `User's age must be greater than 18 years`,
-    skills: `Number of skills can't exceed more than 10`,
-    photoUrl: `The format of photo url is not valid`,
-    gender: `Gender can either male/female/others.`,
-    password: `Password must contain atleast 1 of each Upper case, Lower case and special character. Minimum Length of password should be atleast 8`,
+    [FIRST_NAME]: `First name must be in between 4 to 20 characters`,
+    [LAST_NAME]: `Last name must be in between 4 to 20 characters`,
+    [EMAIL]: `Email format is invalid`,
+    [AGE]: `User's age must be greater than 18 years`,
+    [SKILLS]: `Number of skills can't exceed more than 10`,
+    [PHOTO_URL]: `The format of photo url is not valid`,
+    [GENDER]: `Gender can either male/female/others.`,
+    [PASSWORD]: `Password must contain atleast 1 of each Upper case, Lower case and special character. Minimum Length of password should be atleast 8`,
+    [ABOUT]: `User about description can't be more than 150 words`,
   },
 };
 

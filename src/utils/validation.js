@@ -1,5 +1,6 @@
 import validator from "validator";
 import {
+  ABOUT,
   AGE,
   ALL_FIELDS,
   EMAIL,
@@ -42,6 +43,14 @@ export const signupValidation = (signUpData = {}) => {
         if (!isEmpty(signUpData[field]) && !validator.isURL(signUpData[field]))
           return getValidatonMessage(field, "INVALID");
         break;
+      case ABOUT:
+        if (
+          !isEmpty(signUpData[field]) &&
+          typeof signUpData[field] === "string" &&
+          signUpData[field].split(" ").length > 5
+        )
+          return getValidatonMessage(field, "INVALID");
+        break;
       case GENDER:
         if (
           !isEmpty(signUpData[field]) &&
@@ -53,6 +62,7 @@ export const signupValidation = (signUpData = {}) => {
       case PASSWORD:
         if (!validator.isStrongPassword(signUpData[field]))
           return getValidatonMessage(field, "INVALID");
+        break;
       default:
         break;
     }
