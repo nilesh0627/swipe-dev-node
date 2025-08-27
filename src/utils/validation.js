@@ -2,6 +2,7 @@ import validator from "validator";
 import {
   ABOUT,
   AGE,
+  ALL_FIELDS,
   EMAIL,
   FIRST_NAME,
   GENDER,
@@ -18,12 +19,15 @@ const getValidatonMessage = (field, type) => {
   throw new Error(VALIDATION_MESSAGE?.[type]?.[field]);
 };
 
-export const validateUserInfoField = (field, value, required) => {
+export const validateUserInfoField = (field, value, required = false) => {
   if (required && isEmpty(value)) return getValidatonMessage(field, "EMPTY");
   switch (field) {
     case FIRST_NAME:
+      if (value?.length < 3 || value?.length > 20)
+        return getValidatonMessage(field, "INVALID");
+      break;
     case LAST_NAME:
-      if (value?.length < 4 || value?.length > 20)
+      if (value?.length < 1 || value?.length > 20)
         return getValidatonMessage(field, "INVALID");
       break;
     case EMAIL:
@@ -64,4 +68,10 @@ export const validateUserInfoField = (field, value, required) => {
     default:
       break;
   }
+};
+
+export const signUpDataValidation = (body) => {
+  ALL_FIELDS.forEach((FIELD) => {
+    validateUserInfoField(FIELD, body[FIELD]);
+  });
 };

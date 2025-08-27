@@ -8,6 +8,7 @@ import {
   GENDER,
   LAST_NAME,
   PASSWORD,
+  PHOTO_URL,
   SKILLS,
 } from "../utils/constants.js";
 import { validateUserInfoField } from "../utils/validation.js";
@@ -19,13 +20,13 @@ const userSchema = new Schema(
     [FIRST_NAME]: {
       type: String,
       required: true,
-      minLength: 4,
+      minLength: 3,
       maxLength: 20,
       validate: (value) => validateUserInfoField(FIRST_NAME, value, true),
     },
     [LAST_NAME]: {
       type: String,
-      minLength: 4,
+      minLength: 1,
       maxLength: 20,
       validate: (value) => validateUserInfoField(LAST_NAME, value, false),
     },
@@ -40,9 +41,6 @@ const userSchema = new Schema(
     [PASSWORD]: {
       type: String,
       required: true,
-      maxLength: 20,
-      minLength: 8,
-      validate: (value) => validateUserInfoField(PASSWORD, value, true),
     },
     [AGE]: {
       type: Number,
@@ -62,11 +60,9 @@ const userSchema = new Schema(
       default: "Default value",
       validate: (value) => validateUserInfoField(ABOUT, value, false),
     },
-    photoUrl: {
+    [PHOTO_URL]: {
       type: String,
-      validate(url) {
-        if (!validator.isURL(url)) throw new Error("Url not valid");
-      },
+      validate: (value) => validateUserInfoField(PHOTO_URL, value, false),
     },
     // address: {
     //     street: { type: String },

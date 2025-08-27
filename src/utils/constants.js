@@ -42,8 +42,8 @@ export const VALIDATION_MESSAGE = {
     [AGE]: `Age can't be empty`,
   },
   INVALID: {
-    [FIRST_NAME]: `First name must be in between 4 to 20 characters`,
-    [LAST_NAME]: `Last name must be in between 4 to 20 characters`,
+    [FIRST_NAME]: `First name must be in between 3 to 20 characters`,
+    [LAST_NAME]: `Last name must be in between 1 to 20 characters`,
     [EMAIL]: `Email format is invalid`,
     [AGE]: `User's age must be greater than 18 years`,
     [SKILLS]: `Number of skills can't exceed more than 10`,

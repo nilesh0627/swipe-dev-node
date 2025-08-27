@@ -1,9 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+
 import { connectDB } from "./config/database.js";
 import { User } from "./models/user.js";
-import "./config/database.js";
 import { ALLOWED_FIELDS_TO_UPDATE } from "./utils/constants.js";
+
+import "./config/database.js";
+import { signUpDataValidation } from "./utils/validation.js";
 
 dotenv.config();
 const app = express();
@@ -17,14 +21,35 @@ app.use(express.json());
 
 // When you call mongoose.connect(...) in your connectDB function, you are telling Mongoose to connect to a specific MongoDB database.After this connection is established, all Mongoose models(like your User model) will use this connection by default.
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
   try {
+    signUpDataValidation(req.body);
+    const {
+      firstName,
+      lastName,
+      gender,
+      skills,
+      age,
+      password,
+      photoUrl,
+      email,
+      about,
+    } = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = new User({
+      firstName,
+      lastName,
+      gender,
+      skills,
+      age,
+      photoUrl,
+      email,
+      about,
+      password: passwordHash,
+    });
     await user.save();
     res.send(`user signedup successfully`);
   } catch (err) {
-    res
-      .status(400)
-      .send("Error saving the user:" + err.message + "\n" + err.stack);
+    res.status(400).send("Error saving the user:" + err.message);
   }
 });
 
@@ -80,8 +105,9 @@ app.get("/feed", async (req, res) => {
 });
 
 connectDB()
-  .then(() => {
+  .then(async () => {
     console.log("DB Connection Successful");
+    await User.syncIndexes();
     app.listen(port, () => {
       console.log(`Server running on port: ${port}`);
     });
