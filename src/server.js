@@ -1,6 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
 
 import { connectDB } from "./config/database.js";
 import { User } from "./models/user.js";
@@ -9,15 +11,21 @@ import { ALLOWED_FIELDS_TO_UPDATE } from "./utils/constants.js";
 import "./config/database.js";
 import { signUpDataValidation } from "./utils/validation.js";
 
+// loads environment variables from your .env file into process.env.
 dotenv.config();
+
 const app = express();
 
 const port = process.env.PORT || 3000;
+const authSecretKey = process.env.AUTH_SECRET_KEY;
 
 // a middleware in Express that parses incoming requests with JSON payloads.
 // It automatically reads the body of incoming HTTP requests(like POST or PUT) if they have a Content - Type: application/json header.
 // It parses the JSON data and attaches it to req.body, so you can easily access the submitted data in your route handlers.
 app.use(express.json());
+
+// Parses cookies from incoming requests and makes them available as req.cookies in route handlers.
+app.use(cookieParser());
 
 // When you call mongoose.connect(...) in your connectDB function, you are telling Mongoose to connect to a specific MongoDB database.After this connection is established, all Mongoose models(like your User model) will use this connection by default.
 app.post("/signup", async (req, res) => {
@@ -82,6 +90,32 @@ app.patch("/user/:userId", async (req, res) => {
   } catch (err) {
     res.status(400).send("Error:" + err.message);
   }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) res.status(404).send(`Invalid Credentials`);
+    const isAuthenticatedUser = await bcrypt.compare(password, user.password);
+    if (isAuthenticatedUser) {
+      const token = jwt.sign({ userId: user._id }, authSecretKey, {
+        expiresIn: "1h",
+      });
+      res.cookie("token", token);
+      res.send("Login Successful");
+    } else throw new Error("Invalid Credentials");
+  } catch (err) {
+    res.status(400).send("Error:" + err.message);
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  const { token } = req.cookies;
+  const decodedTokenObject = jwt.verify(token, authSecretKey);
+  const userId = decodedTokenObject.userId;
+  const user = await User.findById(userId);
+  res.send(user);
 });
 
 app.delete("/user", async (req, res) => {
