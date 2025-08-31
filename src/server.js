@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 
+import { userAuth } from "./middlewares/auth.js";
 import { connectDB } from "./config/database.js";
 import { User } from "./models/user.js";
 import { ALLOWED_FIELDS_TO_UPDATE } from "./utils/constants.js";
@@ -61,19 +62,8 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.get("/user", async (req, res) => {
-  const userEmail = req.query.email;
-  try {
-    const user = await User.findOne({ email: userEmail });
-    if (!user) res.status(404).send("User not found");
-    else res.send(user);
-  } catch (err) {
-    res.status(400).send("something went wrong" + err.message);
-  }
-});
-
-app.patch("/user/:userId", async (req, res) => {
-  const userId = req.params.userId;
+app.patch("/user", userAuth, async (req, res) => {
+  const userId = req.user._id;
   try {
     Object.keys(req.body).forEach((key) => {
       if (!ALLOWED_FIELDS_TO_UPDATE.includes(key))
@@ -110,12 +100,13 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
-  const { token } = req.cookies;
-  const decodedTokenObject = jwt.verify(token, authSecretKey);
-  const userId = decodedTokenObject.userId;
-  const user = await User.findById(userId);
-  res.send(user);
+app.get("/profile", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    res.send(user);
+  } catch (err) {
+    res.status(400).send(`ERROR: ${err.message}`);
+  }
 });
 
 app.delete("/user", async (req, res) => {
@@ -129,7 +120,7 @@ app.delete("/user", async (req, res) => {
   }
 });
 
-app.get("/feed", async (req, res) => {
+app.get("/feed", userAuth, async (req, res) => {
   try {
     const users = await User.find();
     res.send(users);
