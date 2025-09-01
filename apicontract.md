@@ -1,8 +1,12 @@
 ## SWIPE DEV API'S
 
+# /authRouter
+
 1. POST /signup
 2. POST /login
 3. POST /logout
+
+# /profileRouter
 
 4. GET /profile/view
 5. PATCH /profile/edit
@@ -12,11 +16,14 @@
 
 # accepted, rejected
 
+# /connectionRequestRouter
+
 7. POST /request/send/interested/:userId
 8. POST /request/send/ignored/:userId
-
 9. POST /request/review/accepted/:userId
 10. POST /request/review/rejected/:userId
+
+# /userRouter
 
 11. GET /connections
 12. GET /requests/received
