@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import validator from "validator";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import {
   ABOUT,
   AGE,
@@ -77,6 +78,32 @@ const userSchema = new Schema(
   }
 );
 
+// normal function, not an arrow function since we are using this inside
+userSchema.methods.getJWT = async function () {
+  const user = this;
+  const authSecretKey = process.env.AUTH_SECRET_KEY;
+  const token = await jwt.sign({ userId: user._id }, authSecretKey, {
+    expiresIn: "24h",
+  });
+  return token;
+};
+
+userSchema.methods.validatePassword = async function (password) {
+  const user = this;
+  const isAuthorizedUser = await bcrypt.compare(password, user.password);
+  return isAuthorizedUser;
+};
+
+/* 
+mongoose.model() always uses the default connection unless you explicitly create a different connection with mongoose.createConnection().
+All queries (User.findOne(), User.save(), etc.) will use the database specified in your default connection string.
+
+The default connection string refers to the MongoDB URI you provide when you call:
+await mongoose.connect(process.env.DB_CONNECTION_STRING);
+
+This string (usually stored in your .env file as DB_CONNECTION_STRING) tells Mongoose which MongoDB database to connect to.
+All models created with mongoose.model() will use this connection by default.
+*/
 const User = mongoose.model("User", userSchema);
 
 export { User };
