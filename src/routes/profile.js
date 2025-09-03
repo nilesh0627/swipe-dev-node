@@ -1,7 +1,6 @@
 import express from "express";
 import { userAuth } from "../middlewares/auth.js";
-import { ALLOWED_FIELDS_TO_UPDATE } from "../utils/constants.js";
-import { User } from "../models/user.js";
+import bcrypt from "bcrypt";
 import { isEditProfileDataValid } from "../utils/validation.js";
 
 const profileRouter = express.Router();
@@ -29,6 +28,21 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     res.status(200).json({
       message: `${loggedInUser.firstName},Your Profile is updated successfully`,
       user: loggedInUser,
+    });
+  } catch (err) {
+    res.status(400).send(`ERROR: ${err.message}`);
+  }
+});
+
+profileRouter.patch("/profile/password", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    const { password } = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+    user["password"] = passwordHash;
+    await user.save();
+    res.json({
+      message: "Password updated successfully",
     });
   } catch (err) {
     res.status(400).send(`ERROR: ${err.message}`);
