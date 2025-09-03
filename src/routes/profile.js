@@ -27,7 +27,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     // .save() validates the document, runs hooks/defaults, writes to DB, and returns the same updated instance.
     await loggedInUser.save();
     res.status(200).json({
-      message: "User details updated successfully",
+      message: `${loggedInUser.firstName},Your Profile is updated successfully`,
       user: loggedInUser,
     });
   } catch (err) {
