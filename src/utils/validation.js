@@ -3,6 +3,7 @@ import {
   ABOUT,
   AGE,
   ALL_FIELDS,
+  ALLOWED_FIELDS_TO_UPDATE,
   EMAIL,
   FIRST_NAME,
   GENDER,
@@ -74,4 +75,10 @@ export const signUpDataValidation = (body) => {
   ALL_FIELDS.forEach((FIELD) => {
     validateUserInfoField(FIELD, body[FIELD]);
   });
+};
+
+export const isEditProfileDataValid = (EditReqFields) => {
+  return Object.keys(EditReqFields).every((field) =>
+    ALLOWED_FIELDS_TO_UPDATE.includes(field)
+  );
 };

@@ -23,3 +23,19 @@ Example: const token = jwt.sign({ userId: user.\_id }, secret, { expiresIn: "1h"
 
 expires in res.cookie() = browser storage lifetime.
 expiresIn in JWT = token validity for authentication.
+
+# General Rule of Thumb
+
+## Use .save() when:
+
+You need hooks/middleware to run (pre/post save, password hashing, timestamps).
+You want full validation + defaults applied.
+You’re dealing with sensitive fields (password, role, email, etc.).
+You want to work with the document instance in memory before persisting.
+
+## Use findByIdAndUpdate / updateOne when:
+
+It’s a simple, non-sensitive update (like updating lastLogin, viewCount, or bio).
+You want a fast, direct update query (skips loading the doc).
+You don’t need middleware/defaults.
+You explicitly enable { runValidators: true } if you want schema validation.
