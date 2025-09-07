@@ -7,6 +7,7 @@ import {
   EMAIL,
   FIRST_NAME,
   GENDER,
+  GENDER_LIST,
   LAST_NAME,
   PASSWORD,
   PHOTO_URL,
@@ -50,6 +51,10 @@ const userSchema = new Schema(
     },
     [GENDER]: {
       type: String,
+      enum: {
+        values: GENDER_LIST,
+        message: "{VALUE} is not supported in gender",
+      },
       validate: (value) => validateUserInfoField(GENDER, value, false),
     },
     [SKILLS]: {
