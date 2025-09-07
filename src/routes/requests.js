@@ -1,7 +1,6 @@
 import express from "express";
 import { userAuth } from "../middlewares/auth.js";
 import { ConnectionRequest } from "../models/connectionRequest.js";
-import mongoose from "mongoose";
 import { User } from "../models/user.js";
 
 const requestsRouter = express.Router();
@@ -52,6 +51,40 @@ requestsRouter.post(
       });
     } catch (err) {
       res.status(400).send({ message: `ERROR: ${err.message}` });
+    }
+  }
+);
+
+/*
+requestId is the _id of each connection request.
+*/
+requestsRouter.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const { status, requestId } = req.params;
+      const loggedInUser = req.user;
+      const allowedStatus = ["accepted", "rejected"];
+      if (!allowedStatus.includes(status))
+        return res.status(400).json({ message: "Invalid review status" });
+      /* using findOne so i can filter out the ignore, once a user is ignored then that can't be accepted/rejected.
+       if i am the logged in user then i can only see who all are interested in me and i can either accept/reject at a time by using requestId
+      */
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+      if (!connectionRequest)
+        return res
+          .status(400)
+          .json({ message: "Connection request not found" });
+      connectionRequest.status = status;
+      await connectionRequest.save();
+      res.json({ message: "Accepted!! It's a match" });
+    } catch (err) {
+      res.status(400).json({ message: `ERROR: ${err.message}` });
     }
   }
 );

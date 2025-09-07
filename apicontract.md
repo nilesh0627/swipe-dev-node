@@ -2,15 +2,15 @@
 
 # /authRouter
 
-1. POST /signup
-2. POST /login
-3. POST /logout
+- POST /signup
+- POST /login
+- POST /logout
 
 # /profileRouter
 
-4. GET /profile/view
-5. PATCH /profile/edit
-6. PATCH /profile/password
+- GET /profile/view
+- PATCH /profile/edit
+- PATCH /profile/password
 
 # interested, ignored
 
@@ -18,10 +18,8 @@
 
 # /connectionRequestRouter
 
-7. POST /request/send/interested/:userId
-8. POST /request/send/ignored/:userId
-9. POST /request/review/accepted/:userId
-10. POST /request/review/rejected/:userId
+- POST /request/send/:status/:userId --> either interested/ignored like left and right swipe
+- POST /request/review/:status/:userId --> either accept/reject the request
 
 # /userRouter
 

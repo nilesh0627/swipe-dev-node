@@ -10,6 +10,7 @@ import { profileRouter } from "./routes/profile.js";
 import { requestsRouter } from "./routes/requests.js";
 
 import "./config/database.js";
+import { userRouter } from "./routes/user.js";
 
 // loads environment variables from your .env file into process.env.
 dotenv.config();
@@ -32,6 +33,7 @@ app.use(cookieParser());
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestsRouter);
+app.use("/", userRouter);
 
 connectDB()
   .then(async () => {

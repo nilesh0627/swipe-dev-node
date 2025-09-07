@@ -51,10 +51,10 @@ const userSchema = new Schema(
     },
     [GENDER]: {
       type: String,
-      enum: {
-        values: GENDER_LIST,
-        message: "{VALUE} is not supported in gender",
-      },
+      // enum: {
+      //   values: GENDER_LIST,
+      //   message: "{VALUE} is not supported in gender",
+      // },
       validate: (value) => validateUserInfoField(GENDER, value, false),
     },
     [SKILLS]: {
