@@ -5,7 +5,7 @@ import "../config/env.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/requests/received", userAuth, async (req, res) => {
+userRouter.get("/user/requests", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
     const receivedRequests = await ConnectionRequest.find({
@@ -18,7 +18,7 @@ userRouter.get("/requests/received", userAuth, async (req, res) => {
   }
 });
 
-userRouter.get("/connections", userAuth, async (req, res) => {
+userRouter.get("/user/connections", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
     const connectionsList = await ConnectionRequest.find({
