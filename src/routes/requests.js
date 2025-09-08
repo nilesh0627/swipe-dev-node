@@ -81,8 +81,11 @@ requestsRouter.post(
           .status(400)
           .json({ message: "Connection request not found" });
       connectionRequest.status = status;
-      await connectionRequest.save();
-      res.json({ message: "Accepted!! It's a match" });
+      const data = await connectionRequest.save();
+      res.json({
+        message: status === "accepted" ? "Accepted!! It's a match" : "Rejected",
+        data,
+      });
     } catch (err) {
       res.status(400).json({ message: `ERROR: ${err.message}` });
     }
