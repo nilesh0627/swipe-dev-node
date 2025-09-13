@@ -2,6 +2,7 @@ import express from "express";
 import { userAuth } from "../middlewares/auth.js";
 import { ConnectionRequest } from "../models/connectionRequest.js";
 import "../config/env.js";
+import { User } from "../models/user.js";
 
 const userRouter = express.Router();
 
@@ -55,6 +56,36 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
     });
 
     res.json({ responseData });
+  } catch (err) {
+    res.status(400).json({ message: `ERROR: ${err.message}` });
+  }
+});
+
+/*
+idea is to get the loggedInUser current connections (i.e. interested/ignored/accepted/rejected) and then get the connection user ids list 
+and then fetch the users from User collection by excluding those users which exists in loggedInUser connection user ids list 
+*/
+userRouter.get("/user/feed", userAuth, async (req, res, next) => {
+  try {
+    const loggedInUser = req.user;
+    const loggedInUserConnections = await ConnectionRequest.find({
+      $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
+    });
+    // get the user ids who have sent connection requests to loggedin user or the users who have received connections from logged in user
+    const loggedInUserConnectionIds = loggedInUserConnections.map(
+      (connection) => {
+        if (connection.fromUserId.equals(loggedInUser._id)) {
+          return connection.toUserId;
+        }
+        return connection.fromUserId;
+      }
+    );
+    // add the loggedInUser id in the list so feed users can be filtered
+    loggedInUserConnectionIds.push(loggedInUser._id);
+    const users = await User.find({
+      _id: { $nin: loggedInUserConnectionIds },
+    });
+    res.json({ users });
   } catch (err) {
     res.status(400).json({ message: `ERROR: ${err.message}` });
   }
