@@ -3,18 +3,9 @@ import { userAuth } from "../middlewares/auth.js";
 import { ConnectionRequest } from "../models/connectionRequest.js";
 import "../config/env.js";
 import { User } from "../models/user.js";
+import { USER_FIELDS_TO_SHARE } from "../utils/constants.js";
 
 const userRouter = express.Router();
-
-const USER_FIELDS_TO_SHARE = [
-  "firstName",
-  "lastName",
-  "age",
-  "gender",
-  "skills",
-  "about",
-  "photoUrl",
-];
 
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
   try {

@@ -55,3 +55,13 @@ export const VALIDATION_MESSAGE = {
 };
 
 export const GENDER_LIST = ["MALE", "FEMALE", "OTHERS"];
+
+export const USER_FIELDS_TO_SHARE = [
+  "firstName",
+  "lastName",
+  "age",
+  "gender",
+  "skills",
+  "about",
+  "photoUrl",
+];
