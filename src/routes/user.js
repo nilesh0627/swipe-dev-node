@@ -5,7 +5,17 @@ import "../config/env.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/user/requests", userAuth, async (req, res) => {
+const USER_FIELDS_TO_SHARE = [
+  "firstName",
+  "lastName",
+  "age",
+  "gender",
+  "skills",
+  "about",
+  "photoUrl",
+];
+
+userRouter.get("/user/requests/received", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
     const receivedRequests = await ConnectionRequest.find({
@@ -21,11 +31,30 @@ userRouter.get("/user/requests", userAuth, async (req, res) => {
 userRouter.get("/user/connections", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
+
+    //get the list of connections which has the status of accepted and the id involves the loggedin user either as sender or receiver
     const connectionsList = await ConnectionRequest.find({
-      toUserId: loggedInUser._id,
+      $or: [
+        {
+          toUserId: loggedInUser._id,
+        },
+        {
+          fromUserId: loggedInUser._id,
+        },
+      ],
       status: "accepted",
+    })
+      .populate("fromUserId", USER_FIELDS_TO_SHARE)
+      .populate("toUserId", USER_FIELDS_TO_SHARE);
+    // if the loggedInUser has sent the connection request then return the receiver profile or else if loggedInUser has received the connection request then get the sender profile
+    const responseData = connectionsList.map((connection) => {
+      if (connection.fromUserId._id.equals(loggedInUser._id)) {
+        return connection.toUserId;
+      }
+      return connection.fromUserId;
     });
-    res.json({ connectionsList });
+
+    res.json({ responseData });
   } catch (err) {
     res.status(400).json({ message: `ERROR: ${err.message}` });
   }
