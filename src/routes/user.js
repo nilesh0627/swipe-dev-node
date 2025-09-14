@@ -54,11 +54,27 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 
 /*
 idea is to get the loggedInUser current connections (i.e. interested/ignored/accepted/rejected) and then get the connection user ids list 
-and then fetch the users from User collection by excluding those users which exists in loggedInUser connection user ids list 
+and then fetch the users from User collection by excluding those users which exists in loggedInUser connection user ids list
+
+/feed?page=1&limit=10 => 1-10 => .skip(0) & .limit(10)
+
+/feed?page=2&limit=10 => 11-20 => .skip(10) & .limit(10)
+
+/feed?page=3&limit=10 => 21-30 => .skip(20) & .limit(10)
+
+/feed?page=4&limit=10 => 21-30 => .skip(20) & .limit(10)
+
+skip = (page-1)*limit;
 */
+
+// user/feed?page=2&limit=10
 userRouter.get("/user/feed", userAuth, async (req, res, next) => {
   try {
     const loggedInUser = req.user;
+    const page = parseInt(req.query.page) || 1; // which page data
+    let limit = parseInt(req.query.limit) || 10; // how many rows data needed
+    limit = limit > 50 ? 50 : limit; // not allow client to fetch a very large number of data which can upset DB performance so added a check to get 50 rows data max at a time
+    const skip = (page - 1) * limit + 1; // check above examples for formula derivation
     const loggedInUserConnections = await ConnectionRequest.find({
       $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
     });
@@ -75,7 +91,10 @@ userRouter.get("/user/feed", userAuth, async (req, res, next) => {
     loggedInUserConnectionIds.push(loggedInUser._id);
     const users = await User.find({
       _id: { $nin: loggedInUserConnectionIds },
-    });
+    })
+      .select(USER_FIELDS_TO_SHARE)
+      .skip(skip)
+      .limit(limit);
     res.json({ users });
   } catch (err) {
     res.status(400).json({ message: `ERROR: ${err.message}` });
